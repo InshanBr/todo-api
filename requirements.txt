@@ -4,4 +4,5 @@ SQLAlchemy
 Flask-JWT-Extended
 python-dotenv
 bcrypt
+psycopg2-binary
 Gunicorn
