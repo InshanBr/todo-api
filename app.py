@@ -34,7 +34,7 @@ def create_user():
         elif check_user:
             return jsonify({"error": "Username ou email já estão em uso"}), 422
         else:
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
             new_user = User(username=username, email=email,password=hashed_password)
             db.session.add(new_user)
             db.session.commit()
