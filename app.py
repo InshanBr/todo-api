@@ -34,7 +34,7 @@ def create_user():
         elif check_user:
             return jsonify({"error": "Username ou email já estão em uso"}), 422
         else:
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
             new_user = User(username=username, email=email,password=hashed_password)
             db.session.add(new_user)
             db.session.commit()
@@ -46,7 +46,7 @@ def login():
     password = request.json.get('user', {}).get('password')
     user = User.query.filter_by(username=username).first()
     if user:
-        if bcrypt.checkpw(password.encode('utf-8'), user.password):
+        if bcrypt.checkpw(password.encode(), user.password):
             access_token = create_access_token(identity=username,expires_delta=timedelta(hours=1))
             return jsonify(access_token=access_token), 200
         else:
