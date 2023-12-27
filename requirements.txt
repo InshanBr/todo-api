@@ -1,2 +1,7 @@
 Flask
+Flask-SQLAlchemy
+SQLAlchemy
+Flask-JWT-Extended
+python-dotenv
+bcrypt
 Gunicorn
