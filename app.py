@@ -35,6 +35,7 @@ def create_user():
             return jsonify({"error": "Username ou email já estão em uso"}), 422
         else:
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            hashed_password = str(hashed_password)[2:-1]
             new_user = User(username=username, email=email,password=hashed_password)
             db.session.add(new_user)
             db.session.commit()
@@ -46,9 +47,7 @@ def login():
     password = request.json.get('user', {}).get('password')
     user = User.query.filter_by(username=username).first()
     if user:
-        print(bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()))
-        print(user.password)
-        if bcrypt.checkpw(bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()), user.password):#password.encode('utf-8')
+        if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
             access_token = create_access_token(identity=username,expires_delta=timedelta(hours=1))
             return jsonify(access_token=access_token), 200
         else:
@@ -56,19 +55,11 @@ def login():
     else:
         return jsonify({"error": "Usuário inexistente!"}), 422
 
-
-
 @app.route('/user', methods=['GET'])
 @jwt_required()
 def protected():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
-
-@app.route('/tests', methods=['GET','POST'])
-def tests():
-    username = request.json.get('user', {}).get('username')
-    password = request.json.get('user', {}).get('password')
-    user = User.query.filter_by(username=username).first()
 
 if __name__ == '__main__':
     app.run(debug=True)
