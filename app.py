@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask_cors import CORS
 from database import configure, db, User
 from werkzeug.exceptions import BadRequest
 from datetime import timedelta
@@ -11,6 +12,7 @@ app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 jwt = JWTManager(app)
 configure(app)
+CORS(app)
 
 with app.app_context():
     db.create_all()
