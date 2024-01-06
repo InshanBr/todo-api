@@ -22,6 +22,18 @@ def handle_bad_request(e):
     response = jsonify({'error': 'Campos faltando na requisição'}), 400
     return response
 
+@jwt.expired_token_loader
+def expired_token_callback(*argv):
+    return jsonify({'error': 'Token expirado'}), 401
+
+@jwt.invalid_token_loader
+def invalid_token_callback(*argv):
+    return jsonify({'error': 'Token invalido'}), 401
+
+@jwt.unauthorized_loader
+def unauthorized_loader_callback(*argv):
+    return jsonify({'error': 'Token vazio'}), 401
+
 @app.route('/users', methods=['POST']) # Register a new user
 def create_user():
     username = request.json.get('user', {}).get('username')
@@ -62,7 +74,7 @@ def login():
 @jwt_required()
 def protected():
     current_user = get_jwt_identity()
-    return jsonify(logged_in=current_user), 200
+    return jsonify(logged_in_as=current_user), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
