@@ -41,7 +41,8 @@ def create_user():
             new_user = User(username=username, email=email,password=hashed_password)
             db.session.add(new_user)
             db.session.commit()
-            return jsonify({"message": "Usuário criado com sucesso!"}), 201
+            access_token = create_access_token(identity=username,expires_delta=timedelta(days=1))
+            return jsonify({"message": "Usuário criado com sucesso!","access_token": access_token}), 201
 
 @app.route('/users/login', methods=['POST']) # Login for existing user
 def login():
@@ -50,7 +51,7 @@ def login():
     user = User.query.filter_by(username=username).first()
     if user:
         if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-            access_token = create_access_token(identity=username,expires_delta=timedelta(hours=1))
+            access_token = create_access_token(identity=username,expires_delta=timedelta(days=1))
             return jsonify(access_token=access_token), 200
         else:
             return jsonify({"error": "Senha incorreta!"}), 401
@@ -61,7 +62,7 @@ def login():
 @jwt_required()
 def protected():
     current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200
+    return jsonify(logged_in=current_user), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
